@@ -28,33 +28,27 @@ end
 new_features = feature_matrix;
 
 new_features_train = [new_features(151:450,:)' new_features(461:480,:)']';
-labels_train = [ones(1,300) zeros(1,20)]';
+labels_train = [-ones(1,300) ones(1,20)]';
 new_features_cross_val = [new_features(1:150,:)' new_features(451:460,:)']';
-labels_cross_val = [ones(1,150) zeros(1,10)]';
+labels_cross_val = [-ones(1,150) ones(1,10)]';
 
 labels = [ones(1,num_interictal) zeros(1,num_preictal)]';
-% model = fitcsvm(new_features_train,labels_train,'KernelFunction','rbf',...
-%                                     'BoxConstraint',Inf,'ClassNames',[-1,1]);
+model = fitcsvm(new_features_train,labels_train,'KernelFunction','rbf',...
+                                    'BoxConstraint',Inf,'ClassNames',[-1,1]);
 
-% label = predict(model,new_features_cross_val);
+label = predict(model,new_features_cross_val);
 
-theta = glmfit(new_features_train,labels_train,'binomial');
+theta = glmfit(feature_matrix,labels,'normal');
 num_correct = 0;
-guessed_labels = zeros(size(new_features_cross_val,1),1);
-for i = 1:size(new_features_cross_val,1)
-    if dot(theta(2:end),new_features_cross_val(i,:))+theta(1) > 0
-        label = 1;
-        guessed_labels(i) = 1;
-    else
-        label = 0;
-        guessed_labels(i) = 0;
-    end
-    if label == labels_cross_val(i)
+for i = 1:size(label,1)
+    if dot(theta,feature_matrix)+theta
+    if label(i) == labels_cross_val(i)
         num_correct = num_correct+1;
     end
 end
 
-display(['Accuracy on training data = ' num2str(100*num_correct/size(new_features_cross_val,1))])
+display(['Accuracy on training data = ' num2str(100*num_correct/size(label,1))])
+sum(label)
 % model = train(labels, new_features);
 
 
