@@ -114,4 +114,14 @@ end
 cd('../../cs221-cs229-eeg');
 feature_matrix = permute(feature_matrix,[1 3 2]);
 feature_matrix = reshape(feature_matrix,[size(feature_matrix,1) size(feature_matrix,2)*size(feature_matrix,3)]);
-save(['feature_matrix_' subj_name],'feature_matrix');
+feature_matrix(:,end+1) = 1;
+if is_train
+    ending = '_train';
+else
+    ending = '_test';
+end
+
+feature_data = cell(1,2);
+feature_data{1} = feature_matrix;
+feature_data{2} = num;
+save(['feature_matrix_' subj_name ending],'feature_data');

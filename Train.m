@@ -1,5 +1,11 @@
 function [ theta ] = Train( subj_name )
-[feature_matrix, num_interictal] = Get_DWT_Features(subj_name, true);
+if exist(['feature_matrix_' subj_name '_train.mat'],'file') == 2
+    data = load(['feature_matrix_' subj_name '_train']);
+    feature_matrix_train = data.feature_data{1};
+    num_interictal = data.feature_data{2};
+else
+    [feature_matrix_train, num_interictal] = Get_DWT_Features(subj_name, true);
+end
 % [coeff,score,latent] = pca(feature_matrix);
 % num_not_halved = 0;
 % cutoff = 3;
@@ -29,15 +35,16 @@ function [ theta ] = Train( subj_name )
 % labels_train = [zeros(1,300) ones(1,20)]';
 % new_features_cross_val = [new_features(1:150,:)' new_features(451:460,:)']';
 % labels_cross_val = [zeros(1,150) ones(1,10)]';
-
-labels = [zeros(1,num_interictal) ones(1,size(feature_matrix, 1)-num_interictal)]';
+addpath('machineLearning-master/supervisedLearning/linearRegressionInMultipleVariables');
+labels = [zeros(1,num_interictal) ones(1,size(feature_matrix_train, 1)-num_interictal)]';
 % model = fitcsvm(new_features_train,labels_train,'KernelFunction','rbf',...
 %                                     'BoxConstraint',Inf,'ClassNames',[-1,1]);
 
 % label = predict(model,new_features_cross_val);
 
-% theta = glmfit(new_features_train,labels_train,'binomial');
-theta = glmfit(feature_matrix,labels,'binomial');
+theta = glmfit(feature_matrix_train(:,1:end-1),labels,'binomial');
+% theta = Gradient_Descent(feature_matrix_train, labels, 0.01, 500);
+% theta = glmfit(feature_matrix,labels,'binomial');
 % num_correct = 0;
 % guessed_labels = zeros(size(new_features_cross_val,1),1);
 % for i = 1:size(new_features_cross_val,1)

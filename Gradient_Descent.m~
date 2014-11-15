@@ -1,0 +1,19 @@
+function [ theta ] = Gradient_Descent( X, Y, alpha, num_iterations )
+%GRADIENT_DESCENT Summary of this function goes here
+%   Detailed explanation goes here
+
+theta = zeros(size(X,2),1);
+for i = 1:num_iterations
+    for j = 1:size(X,1)
+        if 1/(1+exp(dot(theta,X(j,:)))) >= 0.5
+            alex = 'hi alex'
+            h = 1;
+        else
+            h = 0;
+        end
+        theta = theta + alpha*(Y(j)-h)*X(j,:)';
+    end
+end
+
+end
+
